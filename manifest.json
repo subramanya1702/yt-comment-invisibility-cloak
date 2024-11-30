@@ -10,7 +10,7 @@
         "128": "images/icon-128.png"
     },
     "action": {
-        "default_title": "Click to activate extension"
+        "default_title": "YT Comment Invisibility Cloak"
     },
     "background": {
         "service_worker": "background.js"
