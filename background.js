@@ -1,45 +1,87 @@
-chrome.runtime.onInstalled.addListener(() => {
-    chrome.action.setBadgeText({
-        text: "OFF",
+function applySettings(tabId) {
+    chrome.storage.local.get([`disableComments_${tabId}`, `disableSecondary_${tabId}`], (settings) => {
+        chrome.scripting.executeScript({
+            target: { tabId },
+            func: (settings, tabId) => {
+                const disableComments = settings[`disableComments_${tabId}`];
+                const disableSecondary = settings[`disableSecondary_${tabId}`];
+
+                const handleComments = () => {
+                    const comments = document.querySelector("ytd-comments#comments.ytd-watch-flexy");
+
+                    if (comments) {
+                        console.log("Comment section found");
+                        comments.style.display = disableComments ? "none" : "block";
+                        commentsObserver.disconnect();
+                    } else {
+                        console.log("Comment section not found");
+                    }
+                };
+
+                const handleSecondary = () => {
+                    const secondary = document.querySelector("div#items.ytd-watch-next-secondary-results-renderer");
+
+                    if (secondary) {
+                        console.log("Secondary section found");
+                        secondary.style.display = disableSecondary ? "none" : "block";
+                        secondaryObserver.disconnect();
+                    } else {
+                        console.log("Secondary section not found");
+                    }
+                };
+
+                const commentsObserver = new MutationObserver(handleComments);
+                const secondaryObserver = new MutationObserver(handleSecondary);
+
+                handleComments();
+                handleSecondary();
+
+                if (!document.querySelector("ytd-comments#comments.ytd-watch-flexy")) {
+                    const commentsContainer = document.querySelector("ytd-page-manager");
+
+                    if (commentsContainer) {
+                        commentsObserver.observe(commentsContainer, {
+                            childList: true,
+                            subtree: true
+                        });
+                    }
+                }
+
+                if (!document.querySelector("div#items.ytd-watch-next-secondary-results-renderer")) {
+                    const secondaryContainer = document.querySelector("ytd-page-manager");
+
+                    if (secondaryContainer) {
+                        secondaryObserver.observe(secondaryContainer, {
+                            childList: true,
+                            subtree: true
+                        });
+                    }
+                }
+
+                window.addEventListener('unload', () => {
+                    commentsObserver.disconnect();
+                    secondaryObserver.disconnect();
+                });
+            },
+            args: [settings, tabId]
+        });
     });
-});
-
-function disableCommentSection(nextState) {
-    const youtubeCommentSection = document.querySelector('ytd-item-section-renderer#sections.ytd-comments');
-
-    console.log(youtubeCommentSection);
-
-    if (youtubeCommentSection !== undefined || youtubeCommentSection !== null) {
-        if (nextState === 'ON') {
-            youtubeCommentSection.style.display = 'none';
-            console.log('Comment section hidden');
-        } else {
-            youtubeCommentSection.style.display = 'block';
-            console.log('Comment section visible');
-        }
-    } else {
-        console.log('Unable to hide comment section. Tag not found!');
-    }
 }
 
-chrome.action.onClicked.addListener(async (tab) => {
-    console.log(tab);
-
-    if (tab.url.startsWith('https://www.youtube.com/watch')) {
-        const prevState = await chrome.action.getBadgeText({ tabId: tab.id });
-        const nextState = prevState === 'ON' ? 'OFF' : 'ON';
-
-        await chrome.action.setBadgeText({
-            tabId: tab.id,
-            text: nextState,
-        });
-
-        console.log(`Changed badge text. Next state: ${nextState}`);
-
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            func: disableCommentSection,
-            args: [nextState]
-        });
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "applySettings") {
+        applySettings(message.tabId);
     }
+});
+
+chrome.webNavigation.onCompleted.addListener((details) => {
+    if (details.url
+        && details.frameType === "outermost_frame"
+        && details.url.startsWith("https://www.youtube.com/watch")) {
+        applySettings(details.tabId);
+    }
+}, { url: [{ hostContains: "youtube.com" }] });
+
+chrome.tabs.onRemoved.addListener((tabId) => {
+    chrome.storage.local.remove([`disableComments_${tabId}`, `disableSecondary_${tabId}`]);
 });
