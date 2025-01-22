@@ -6,12 +6,25 @@ function applySettings(tabId) {
                 const disableComments = settings[`disableComments_${tabId}`];
                 const disableSecondary = settings[`disableSecondary_${tabId}`];
 
+                const openTheatreMode = (isDisabled) => {
+                    if (isDisabled) {
+                        const theatreButton = document.querySelector(".ytp-size-button");
+
+                        console.log(theatreButton);
+
+                        if (theatreButton) {
+                            theatreButton.click();
+                        }
+                    }
+                }
+
                 const handleComments = () => {
                     const comments = document.querySelector("ytd-comments#comments.ytd-watch-flexy");
 
                     if (comments) {
                         console.log("Comment section found");
                         comments.style.display = disableComments ? "none" : "block";
+                        openTheatreMode(disableComments);
                         commentsObserver.disconnect();
                     } else {
                         console.log("Comment section not found");
@@ -24,6 +37,7 @@ function applySettings(tabId) {
                     if (secondary) {
                         console.log("Secondary section found");
                         secondary.style.display = disableSecondary ? "none" : "block";
+                        openTheatreMode(disableSecondary);
                         secondaryObserver.disconnect();
                     } else {
                         console.log("Secondary section not found");

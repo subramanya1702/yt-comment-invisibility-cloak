@@ -6,18 +6,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         html {
-            min-height: 10em;
-            min-width: 15em;
-            background: white;
-            font-family: Arial, sans-serif;
+            min-height: 12em;
+            min-width: 16em;
+            background: #ffffff;
+            font-family: "Roboto", Arial, sans-serif;
         }
 
         body {
-            margin: 1em;
+            margin: 0;
+            padding: 1.5em;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: center;
+        }
+
+        h3 {
+            margin: 0;
+            margin-bottom: 1em;
+            font-size: 1.2em;
+            color: #333333;
+            text-align: center;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.5em;
         }
 
         .checkbox-container {
+            display: flex;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 0.8em;
             margin-bottom: 1em;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease, background-color 0.3s ease;
+        }
+
+        .checkbox-container:hover {
+            background: #f1f1f1;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .checkbox-container label {
+            font-size: 0.9em;
+            color: #555555;
+            margin-left: 0.6em;
+            cursor: pointer;
+        }
+
+        .checkbox-container input {
+            cursor: pointer;
+            accent-color: #4caf50;
+        }
+
+        footer {
+            margin-top: auto;
+            font-size: 0.8em;
+            text-align: center;
+            color: #999999;
+        }
+
+        footer a {
+            text-decoration: none;
+            color: #4caf50;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
     <title>YT Cloak Settings</title>
