@@ -80,7 +80,7 @@ function applySettings(tabId) {
             args: [settings, tabId]
         });
     });
-}
+};
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === "applySettings") {
@@ -88,13 +88,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 });
 
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (tab.url && tab.url.startsWith("https://www.youtube.com/watch")) {
+        chrome.action.setPopup({ popup: "popup.html", tabId });
+    } else {
+        chrome.action.setPopup({ popup: "popup_disabled.html", tabId });
+    }
+})
+
 chrome.webNavigation.onCompleted.addListener((details) => {
-    if (details.url
-        && details.frameType === "outermost_frame"
-        && details.url.startsWith("https://www.youtube.com/watch")) {
+    if (details &&
+        details.url &&
+        details.tabId &&
+        details.url.startsWith("https://www.youtube.com/watch") &&
+        details.frameType === "outermost_frame") {
         applySettings(details.tabId);
     }
-}, { url: [{ hostContains: "youtube.com" }] });
+},
+    { url: [{ hostContains: "youtube.com" }] }
+);
 
 chrome.tabs.onRemoved.addListener((tabId) => {
     chrome.storage.local.remove([`disableComments_${tabId}`, `disableSecondary_${tabId}`]);

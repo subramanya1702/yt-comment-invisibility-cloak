@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "YT Comment Invisibility Cloak",
+    "name": "YT Invisibility Cloak",
     "description": "An extension that hides comment sections and secondary sections on YouTube.",
     "version": "1.0",
     "icons": {
@@ -10,7 +10,7 @@
         "128": "images/icon-128.png"
     },
     "action": {
-        "default_title": "YT Comment Invisibility Cloak",
+        "default_title": "YT Invisibility Cloak",
         "default_popup": "popup.html"
     },
     "background": {
